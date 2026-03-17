@@ -1,0 +1,69 @@
+<div class="min-h-screen flex flex-col bg-linear-to-br from-[#195FA0] to-[#0D3C68] text-white">
+
+  <header class="flex items-center justify-between px-10 py-6">
+
+    <div class="flex items-center gap-3">
+      <img src="/Rectangle.svg" class="w-36" />
+      <span class="font-bold text-lg">TruckFlow</span>
+    </div>
+
+    <div class="flex gap-6 items-center">
+      <button mat-button class="text-white">Início</button>
+      <button mat-button class="text-white">Funcionalidades</button>
+
+      <a routerLink="/login">
+        <button mat-stroked-button class="border-white text-white">
+          Login
+        </button>
+      </a>
+    </div>
+
+  </header>
+
+  <section class="flex flex-col items-center text-center mt-24 px-6">
+
+    <h1 class="text-5xl font-black mb-6 leading-tight">
+      Otimize o fluxo de <br>
+      <span class="text-blue-300">Cargas e Descargas</span>
+    </h1>
+
+    <p class="text-lg text-blue-100 max-w-2xl mb-10">
+      A solução definitiva para agendamento de docas, controle de pátio e redução de filas.
+    </p>
+
+    <div class="flex gap-4">
+      <a routerLink="/register">
+        <button mat-raised-button color="primary">
+          Começar Agora
+        </button>
+      </a>
+
+      <button mat-stroked-button>
+        Saiba Mais
+      </button>
+    </div>
+
+  </section>
+
+
+  <section class="grid md:grid-cols-3 gap-8 px-12 mt-24">
+
+    <div *ngFor="let feature of features" class="bg-white/10 backdrop-blur-md p-6 rounded-xl">
+
+      <h3 class="text-xl font-bold mb-2">
+        {{ feature.title }}
+      </h3>
+
+      <p class="text-blue-200">
+        {{ feature.text }}
+      </p>
+
+    </div>
+
+  </section>
+
+  <footer class="mt-auto text-center py-10 text-sm text-gray-300">
+    © 2026 TruckFlow • Política de Privacidade • Termos de Uso
+  </footer>
+
+</div>
