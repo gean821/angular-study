@@ -6,6 +6,7 @@ import { DashboardOverview } from './pages/homepage/dashboards/dashboard-overvie
 import { SupplierForm } from './pages/homepage/supplier/supplier-form';
 import { SupplierList } from './pages/homepage/supplier/supplier-list';
 import { ProductList } from './pages/product/product-list';
+import { Driver } from './pages/driver/driver';
 
 export const routes: Routes = [
   {
@@ -22,10 +23,11 @@ export const routes: Routes = [
     path: 'dashboard',
     component: Dashboard,
     children: [
-      { path: '',               component: DashboardOverview },
-      { path: 'suppliers/new',  component: SupplierForm },
-      { path: 'suppliers',      component: SupplierList },
-      { path: 'products',       component: ProductList },
+      { path: '', component: DashboardOverview },
+      { path: 'suppliers/new', component: SupplierForm },
+      { path: 'suppliers', component: SupplierList },
+      { path: 'products', component: ProductList },
+      { path: 'drivers', component: Driver },
     ],
   },
 ];
