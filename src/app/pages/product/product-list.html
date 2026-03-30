@@ -1,0 +1,213 @@
+<div class="space-y-6">
+
+  <div class="flex items-center justify-between">
+    <div>
+      <h2 class="text-xl font-black text-white mb-1">Catálogo de Produtos</h2>
+      <p class="text-sm text-blue-200/50">{{ filteredProducts.length }} produto(s) cadastrado(s)</p>
+    </div>
+    <button
+      (click)="openCreateModal()"
+      class="bg-blue-400 hover:bg-blue-300 text-[#0D3C68] font-bold text-sm px-5 py-2.5 rounded-xl transition flex items-center gap-2">
+      <span class="material-icons text-base">add</span>
+      Novo Produto
+    </button>
+  </div>
+
+  <div class="flex items-center gap-4 flex-wrap">
+    <div class="relative flex-1 min-w-55 max-w-sm">
+      <span class="material-icons absolute left-3 top-1/2 -translate-y-1/2 text-blue-300/40 text-lg">search</span>
+      <input
+        [(ngModel)]="searchQuery"
+        (input)="applyFilter()"
+        type="text"
+        placeholder="Buscar por nome, EAN ou local..."
+        class="w-full bg-white/5 border border-white/10 focus:border-blue-400/50 rounded-xl pl-10 pr-4 py-2.5 text-white placeholder-blue-300/30 outline-none text-sm transition"
+      />
+    </div>
+
+    <div class="flex items-center gap-2 text-sm text-blue-200/50 shrink-0">
+      <span>Itens por página:</span>
+      <select
+        [(ngModel)]="itemsPerPage"
+        (change)="currentPage = 1"
+        class="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-white outline-none text-sm">
+        <option [value]="9">9</option>
+        <option [value]="18">18</option>
+        <option [value]="27">27</option>
+      </select>
+    </div>
+  </div>
+
+  <div *ngIf="pagedProducts.length > 0; else empty" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+
+    <div
+      *ngFor="let product of pagedProducts"
+      class="bg-white/5 border border-white/10 hover:border-blue-400/40 hover:bg-white/[0.07] rounded-2xl transition-all duration-200 flex flex-col">
+
+      <div class="flex items-start gap-3 p-4">
+        <div class="w-11 h-11 rounded-xl bg-blue-500/10 border border-blue-400/20 flex items-center justify-center shrink-0">
+          <span class="material-icons text-blue-300/70">inventory_2</span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-bold text-white truncate">{{ product.nome }}</p>
+          <span class="inline-flex items-center gap-1 mt-1 text-xs text-blue-200/50 bg-white/5 border border-white/10 rounded-lg px-2 py-0.5">
+            <span class="material-icons text-[11px]">output</span>
+            {{ product.localDescarga || 'Sem local definido' }}
+          </span>
+        </div>
+      </div>
+
+      <div class="mt-auto border-t border-white/10 px-4 py-3 flex items-center justify-between bg-white/2 rounded-b-2xl">
+        <div>
+          <p class="text-[10px] uppercase tracking-widest text-blue-300/30 font-semibold">Código EAN</p>
+          <p class="text-xs font-mono text-blue-200/60 mt-0.5">{{ product.codigoEan || '—' }}</p>
+        </div>
+        <div class="flex gap-1">
+          <button
+            (click)="openEditModal(product)"
+            class="w-8 h-8 rounded-lg bg-white/5 hover:bg-blue-500/20 border border-white/10 hover:border-blue-400/30 flex items-center justify-center transition"
+            title="Editar">
+            <span class="material-icons text-sm text-blue-200/60">edit</span>
+          </button>
+          <button
+            (click)="delete(product)"
+            class="w-8 h-8 rounded-lg bg-white/5 hover:bg-red-500/20 border border-white/10 hover:border-red-400/30 flex items-center justify-center transition"
+            title="Remover">
+            <span class="material-icons text-sm text-red-300/60">delete</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <ng-template #empty>
+    <div class="py-20 text-center">
+      <span class="material-icons text-5xl text-blue-300/20 mb-3 block">inventory_2</span>
+      <p class="text-blue-200/40 text-sm">Nenhum produto encontrado.</p>
+      <button
+        (click)="openCreateModal()"
+        class="inline-block mt-3 text-blue-400 hover:text-blue-300 text-sm transition">
+        Cadastrar primeiro produto →
+      </button>
+    </div>
+  </ng-template>
+
+  <div *ngIf="totalPages > 1" class="flex items-center justify-center gap-2 pt-2">
+    <button
+      (click)="currentPage = currentPage - 1"
+      [disabled]="currentPage === 1"
+      class="w-9 h-9 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center transition">
+      <span class="material-icons text-sm text-blue-200/60">chevron_left</span>
+    </button>
+
+    <ng-container *ngFor="let page of pageNumbers">
+      <button
+        (click)="currentPage = page"
+        class="w-9 h-9 rounded-xl border text-sm font-medium transition"
+        [class.bg-blue-500]="page === currentPage"
+        [class.border-blue-400]="page === currentPage"
+        [class.text-white]="page === currentPage"
+        [class.bg-white/5]="page !== currentPage"
+        [class.border-white/10]="page !== currentPage"
+        [class.text-blue-200/60]="page !== currentPage"
+        [class.hover:bg-white/10]="page !== currentPage">
+        {{ page }}
+      </button>
+    </ng-container>
+
+    <button
+      (click)="currentPage = currentPage + 1"
+      [disabled]="currentPage === totalPages"
+      class="w-9 h-9 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center transition">
+      <span class="material-icons text-sm text-blue-200/60">chevron_right</span>
+    </button>
+  </div>
+
+</div>
+
+<div *ngIf="modalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+  <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" (click)="closeModal()"></div>
+
+  <div class="relative w-full max-w-md bg-[#0d1f3c] border border-white/10 rounded-2xl shadow-2xl p-6 z-10">
+
+    <div class="flex items-center justify-between mb-5">
+      <div>
+        <h3 class="text-lg font-black text-white">{{ editingProduct ? 'Editar Produto' : 'Novo Produto' }}</h3>
+        <p class="text-xs text-blue-200/40 mt-0.5">Preencha os dados do produto.</p>
+      </div>
+      <button
+        (click)="closeModal()"
+        class="w-8 h-8 rounded-lg hover:bg-white/10 flex items-center justify-center transition">
+        <span class="material-icons text-sm text-blue-200/50">close</span>
+      </button>
+    </div>
+
+    <div [formGroup]="productForm" class="space-y-4">
+
+      <p class="text-[10px] uppercase tracking-widest text-blue-400/60 font-semibold">Identificação</p>
+
+      <div>
+        <label class="block text-sm font-medium text-blue-100 mb-2">Nome do Produto *</label>
+        <input
+          formControlName="nome"
+          type="text"
+          placeholder="Ex: Farelo de Soja"
+          class="w-full bg-white/10 border rounded-xl px-4 py-3 text-white placeholder-blue-300/30 outline-none transition text-sm"
+          [class.border-white/20]="!isInvalid('nome')"
+          [class.border-red-400]="isInvalid('nome')"
+        />
+        <p *ngIf="isInvalid('nome')" class="text-red-400 text-xs mt-1">Mínimo de 3 caracteres.</p>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-blue-100 mb-2">Código EAN / SKU</label>
+        <div class="relative">
+          <span class="material-icons absolute left-3 top-1/2 -translate-y-1/2 text-blue-300/30 text-lg">barcode_reader</span>
+          <input
+            formControlName="codigoEan"
+            type="text"
+            placeholder="Opcional"
+            class="w-full bg-white/10 border border-white/20 rounded-xl pl-10 pr-4 py-3 text-white placeholder-blue-300/30 outline-none transition text-sm"
+          />
+        </div>
+      </div>
+
+      <p class="text-[10px] uppercase tracking-widest text-blue-400/60 font-semibold pt-1">Logística</p>
+
+      <div>
+        <label class="block text-sm font-medium text-blue-100 mb-2">Local de Descarga Padrão *</label>
+        <div class="relative">
+          <span class="material-icons absolute left-3 top-1/2 -translate-y-1/2 text-blue-300/30 text-lg">output</span>
+          <select
+            formControlName="localDescargaId"
+            class="w-full bg-white/10 border rounded-xl pl-10 pr-4 py-3 text-white outline-none transition text-sm appearance-none"
+            [class.border-white/20]="!isInvalid('localDescargaId')"
+            [class.border-red-400]="isInvalid('localDescargaId')">
+            <option value="" disabled class="bg-[#0d1f3c]">Selecione um local...</option>
+           <option *ngFor="let local of locais" [ngValue]="local.id" class="bg-[#0d1f3c]">{{ local.nome }}</option>
+          </select>
+        </div>
+        <p *ngIf="isInvalid('localDescargaId')" class="text-red-400 text-xs mt-1">Campo obrigatório.</p>
+      </div>
+
+      <div class="flex gap-3 pt-2">
+        <button
+          type="button"
+          (click)="closeModal()"
+          class="flex-1 border border-white/20 text-white px-6 py-3 rounded-xl hover:bg-white/10 transition text-sm font-medium">
+          Cancelar
+        </button>
+       <button
+        type="button"
+        (click)="onSubmit()"
+        [disabled]="submitting"
+        class="flex-1 bg-blue-400 hover:bg-blue-300 disabled:opacity-50 disabled:cursor-not-allowed text-[#0D3C68] font-bold px-6 py-3 rounded-xl transition text-sm flex items-center justify-center gap-2">
+          <span *ngIf="submitting" class="material-icons text-base animate-spin">refresh</span>
+          {{ submitting ? 'Salvando...' : (editingProduct ? 'Salvar Alterações' : 'Cadastrar Produto') }}
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
