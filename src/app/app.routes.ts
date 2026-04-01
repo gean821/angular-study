@@ -8,6 +8,7 @@ import { SupplierList } from './pages/homepage/supplier/supplier-list';
 import { ProductList } from './pages/product/product-list';
 import { DriverListComponent } from './pages/driver/driver-list';
 import { DriverFormComponent } from './pages/driver/driver-form';
+import { Driver } from './pages/driver/driver';
 
 export const routes: Routes = [
   {
@@ -30,8 +31,8 @@ export const routes: Routes = [
       { path: 'products',       component: ProductList },
       { path: 'drivers', component: DriverListComponent },
       { path: 'drivers/new', component: DriverFormComponent },
+      { path: 'drivers', component: Driver },
       { path: 'drivers/edit/:id', component: DriverFormComponent },
-
     ],
   },
 ];

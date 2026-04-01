@@ -5,7 +5,7 @@ import { RouterLink } from '@angular/router';
 @Component({
   selector: 'app-dashboard-overview',
   standalone: true,
-  imports: [NgFor, TitleCasePipe, RouterLink],
+  imports: [NgFor, RouterLink],
   templateUrl: './dashboard-overview.html',
 })
 export class DashboardOverview {
