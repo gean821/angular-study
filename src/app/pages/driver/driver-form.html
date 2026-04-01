@@ -1,0 +1,21 @@
+<h2>{{ isEdit ? 'Editar Motorista' : 'Novo Motorista' }}</h2>
+
+<form (ngSubmit)="save()">
+  <input
+    [(ngModel)]="driver.name"
+    name="name"
+    placeholder="Nome"
+    required
+  />
+
+  <input
+    [(ngModel)]="driver.phone"
+    name="phone"
+    placeholder="Telefone"
+    required
+  />
+
+  <button type="submit">
+    {{ isEdit ? 'Atualizar' : 'Salvar' }}
+  </button>
+</form>
