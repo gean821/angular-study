@@ -1,0 +1,13 @@
+<h2>Motoristas</h2>
+
+<a routerLink="/dashboard/drivers/new">Novo Motorista</a>
+
+<ul>
+  <li *ngFor="let driver of drivers">
+    {{ driver.name }} - {{ driver.phone }}
+
+    <a [routerLink]="['/dashboard/drivers/edit', driver.id]">
+      Editar
+    </a>
+  </li>
+</ul>
