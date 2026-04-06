@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { SupplierService } from '../../../services/supplier.service';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-supplier-form',
@@ -10,6 +11,7 @@ import { SupplierService } from '../../../services/supplier.service';
   imports: [CommonModule, RouterLink, ReactiveFormsModule],
   templateUrl: './supplier-form.html',
 })
+
 export class SupplierForm {
 
   supplierForm: FormGroup;
@@ -18,12 +20,34 @@ export class SupplierForm {
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private supplierService: SupplierService
+    private supplierService: SupplierService,
+    private route: ActivatedRoute
   ) {
     this.supplierForm = this.fb.group({
       nome: ['', [Validators.required, Validators.minLength(3)]],
       cnpj: ['', [Validators.required, Validators.pattern(/^\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}$/)]],
     });
+  }
+
+  editingId: string | null = null;
+
+  ngOnInit(): void {
+    const id = this.route.snapshot.paramMap.get('id');
+
+    if (id) {
+      this.editingId = id;
+
+      this.supplierService.getAll().subscribe(data => {
+        const supplier = data.find(s => s.id === this.editingId);
+
+        if (supplier) {
+          this.supplierForm.patchValue({
+            nome: supplier.nome,
+            cnpj: supplier.cnpj
+          });
+        }
+      });
+    }
   }
 
   isInvalid(field: string): boolean {
@@ -49,11 +73,33 @@ export class SupplierForm {
     this.submitting = true;
 
     const { nome, cnpj } = this.supplierForm.value;
-    this.supplierService.add(nome, cnpj);
 
-    setTimeout(() => {
-      this.submitting = false;
-      this.router.navigate(['/dashboard/suppliers']);
-    }, 800);
+    const supplier: any = {
+      nome,
+      cnpj,
+      initials: nome
+        .split(' ')
+        .slice(0, 2)
+        .map((w: string) => w[0].toUpperCase())
+        .join(''),
+      color: '#60a5fa'
+    };
+
+    console.log('EDITANDO ID:', this.editingId);
+
+    if (this.editingId) {
+      console.log('CHAMANDO UPDATE');
+
+      this.supplierService.update(this.editingId, supplier).subscribe(() => {
+        console.log('ATUALIZADO!');
+        this.router.navigate(['/dashboard/suppliers']);
+      });
+    } else {
+      console.log('CHAMANDO CREATE');
+
+      this.supplierService.add(supplier).subscribe(() => {
+        this.router.navigate(['/dashboard/suppliers']);
+      });
+    }
   }
 }

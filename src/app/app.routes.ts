@@ -27,6 +27,7 @@ export const routes: Routes = [
     children: [
       { path: '',               component: DashboardOverview },
       { path: 'suppliers/new',  component: SupplierForm },
+       { path: 'suppliers/edit/:id', component: SupplierForm },
       { path: 'suppliers',      component: SupplierList },
       { path: 'products',       component: ProductList },
       { path: 'drivers', component: DriverListComponent },
