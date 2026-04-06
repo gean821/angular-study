@@ -19,16 +19,20 @@ export class SupplierList implements OnInit {
   constructor(private supplierService: SupplierService) {}
 
   ngOnInit(): void {
+    this.searchQuery = '';
     this.load();
-  }
+}
 
-  load(): void {
-    this.suppliers = this.supplierService.getAll();
+ load(): void {
+  this.supplierService.getAll().subscribe(data => {
+    this.suppliers = data;
     this.applyFilter();
-  }
+  });
+}
 
   applyFilter(): void {
-    const q = this.searchQuery.toLowerCase().trim();
+    const q = (this.searchQuery || '').toLowerCase().trim();
+
     this.filteredSuppliers = this.suppliers.filter(s =>
       s.nome.toLowerCase().includes(q) || s.cnpj.includes(q)
     );
@@ -36,8 +40,21 @@ export class SupplierList implements OnInit {
 
   delete(supplier: Supplier): void {
     if (confirm(`Remover "${supplier.nome}"?`)) {
-      this.supplierService.delete(supplier.id);
-      this.load();
+      this.supplierService.delete(supplier.id).subscribe(() => {
+        this.load();
+      });
     }
+  }
+
+  testUpdate(supplier: Supplier): void {
+    const updated = {
+      ...supplier,
+      nome: supplier.nome + ' (EDITADO)'
+    };
+
+    this.supplierService.update(supplier.id, updated).subscribe(() => {
+      console.log('Atualizado!');
+      this.load();
+    });
   }
 }

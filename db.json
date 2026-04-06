@@ -1,0 +1,19 @@
+{
+  "suppliers": [
+    {
+      "nome": "123",
+      "cnpj": "12.345.678/9123-45",
+      "initials": "1",
+      "color": "#60a5fa",
+      "id": "V4zQNwUvSuA"
+    },
+    {
+      "nome": "Forn Teste",
+      "cnpj": "12.343.536/5864-54",
+      "initials": "FT",
+      "color": "#60a5fa",
+      "id": "W4b0Ycefhj8"
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
+}
