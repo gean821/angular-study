@@ -15,5 +15,49 @@
       "id": "W4b0Ycefhj8"
     }
   ],
+  "products": [
+    {
+      "id": 1,
+      "nome": "Farelo de Soja",
+      "codigoEan": "7891234560001",
+      "localDescargaId": 1
+    },
+    {
+      "id": 2,
+      "nome": "Milho em Grão",
+      "codigoEan": "7891234560002",
+      "localDescargaId": 1
+    },
+    {
+      "id": 3,
+      "nome": "Carne Bovina Resfr.",
+      "codigoEan": "7891234560003",
+      "localDescargaId": 2
+    },
+    {
+      "id": 4,
+      "nome": "Arroz Tipo 1",
+      "codigoEan": "7891234560004",
+      "localDescargaId": 3
+    },
+    {
+      "id": 5,
+      "nome": "Açúcar Cristal",
+      "codigoEan": "",
+      "localDescargaId": 3
+    },
+    {
+      "id": 6,
+      "nome": "Fertilizante NPK",
+      "codigoEan": "7891234560006",
+      "localDescargaId": 4
+    }
+  ],
+  "locaisDescarga": [
+    { "id": 1, "nome": "Doca A - Setor Grãos" },
+    { "id": 2, "nome": "Doca B - Setor Frios" },
+    { "id": 3, "nome": "Doca C - Setor Seco" },
+    { "id": 4, "nome": "Pátio Externo" }
+  ],
   "$schema": "./node_modules/json-server/schema.json"
 }
