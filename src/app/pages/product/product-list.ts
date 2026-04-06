@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { LocalDescarga, Product, ProductService } from '../../services/product.service';
+import { ProductService } from '../../services/product.service';
+import { Product } from '../../models/product';
+import { LocalDescarga } from '../../models/unloadingLocation';
 
 @Component({
   selector: 'app-product-list',
@@ -34,46 +36,71 @@ export class ProductList implements OnInit {
   modalOpen = false;
   submitting = false;
   editingProduct: Product | null = null;
+
   locais: LocalDescarga[] = [];
+
   productForm!: FormGroup;
 
   constructor(
     private fb: FormBuilder,
-    private productService: ProductService,
-  ) {}
+    private productService: ProductService
+  ) { }
 
   ngOnInit(): void {
-    this.locais = this.productService.getLocais();
+    this.productService
+      .getLocais()
+      .subscribe(locais => {
+        this.locais = locais;
+        this.load();
+      });
+
     this.buildForm();
-    this.load();
   }
 
   load(): void {
-    this.products = this.productService.getAll();
-    this.applyFilter();
+    this.productService
+      .getAll()
+      .subscribe(products => {
+
+        this.products = products.map(p => {
+          const local = this.locais
+            .find(l => l.id === p.localDescargaId);
+
+          return {
+            ...p,
+            localDescarga: local ? local.nome : 'Sem local'
+          };
+        });
+
+        this.applyFilter();
+      });
   }
 
   applyFilter(): void {
     const q = this.searchQuery.toLowerCase().trim();
+
     this.filteredProducts = this.products.filter(p =>
       p.nome.toLowerCase().includes(q) ||
       (p.codigoEan ?? '').toLowerCase().includes(q) ||
-      p.localDescarga.toLowerCase().includes(q)
+      (p.localDescarga ?? '').toLowerCase().includes(q)
     );
+
     this.currentPage = 1;
   }
 
   delete(product: Product): void {
     if (confirm(`Remover "${product.nome}"?`)) {
-      this.productService.delete(product.id);
-      this.load();
+      this.productService.delete(product.id)
+        .subscribe(() => {
+          this.load();
+        });
     }
   }
 
   private buildForm(): void {
     this.productForm = this.fb.group({
-      nome:            ['', [Validators.required, Validators.minLength(3)]],
-      codigoEan:       [''],
+      nome: ['', [Validators.required, Validators.minLength(3)]],
+      codigoEan: [''],
       localDescargaId: ['', Validators.required],
     });
   }
@@ -85,17 +112,25 @@ export class ProductList implements OnInit {
 
   openCreateModal(): void {
     this.editingProduct = null;
-    this.productForm.reset({ nome: '', codigoEan: '', localDescargaId: '' });
+
+    this.productForm.reset({
+      nome: '',
+      codigoEan: '',
+      localDescargaId: ''
+    });
+
     this.modalOpen = true;
   }
 
   openEditModal(product: Product): void {
     this.editingProduct = product;
+
     this.productForm.reset({
-      nome:            product.nome,
-      codigoEan:       product.codigoEan,
+      nome: product.nome,
+      codigoEan: product.codigoEan,
       localDescargaId: product.localDescargaId,
     });
+
     this.modalOpen = true;
   }
 
@@ -106,20 +141,36 @@ export class ProductList implements OnInit {
 
   onSubmit(): void {
     this.productForm.markAllAsTouched();
-    if (this.productForm.invalid) return;
+
+    if (this.productForm.invalid) {
+      return;
+    }
 
     this.submitting = true;
+
     const { nome, codigoEan, localDescargaId } = this.productForm.value;
 
-    setTimeout(() => {
-      if (this.editingProduct) {
-        this.productService.update(this.editingProduct.id, nome, codigoEan ?? '', +localDescargaId);
-      } else {
-        this.productService.add(nome, codigoEan ?? '', +localDescargaId);
-      }
-      this.submitting = false;
-      this.closeModal();
-      this.load();
-    }, 600);
+    const payload = {
+      nome,
+      codigoEan: codigoEan ?? '',
+      localDescargaId: +localDescargaId
+    };
+
+    if (this.editingProduct) {
+      this.productService
+        .update(this.editingProduct.id, payload)
+        .subscribe(() => this.afterSave());
+
+    } else {
+      this.productService
+        .add(payload)
+        .subscribe(() => this.afterSave());
+    }
+  }
+
+  private afterSave(): void {
+    this.submitting = false;
+    this.closeModal();
+    this.load();
   }
 }
